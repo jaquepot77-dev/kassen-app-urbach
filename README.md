@@ -1,3 +1,3 @@
 # Kassen-App Urbach
 
-Barumsatz-Formel: Endbestand - Anfangsbestand + Ausgaben = Barumsatz. PIN: 2026
+Neu sortiert: zuerst Ausgaben eintragen, dann Kasse zählen, dann Steueraufteilung. PIN: 2026.
