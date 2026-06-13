@@ -1,0 +1,116 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Kassen-App Urbach</title>
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#0f172a">
+<style>
+:root{--bg:#f4f6f8;--card:#fff;--ink:#111827;--muted:#6b7280;--line:#d1d5db;--accent:#16a34a;--danger:#b91c1c;--warn:#d97706;--dark:#0f172a}*{box-sizing:border-box}body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif;background:var(--bg);color:var(--ink)}header{background:var(--dark);color:white;padding:28px 18px;border-radius:0 0 28px 28px}h1{margin:0;font-size:32px}header p{margin:8px 0 0;color:#cbd5e1}.wrap{max-width:920px;margin:0 auto;padding:18px}.card{background:var(--card);border:1px solid #e5e7eb;border-radius:18px;padding:18px;margin:16px 0;box-shadow:0 1px 4px rgba(0,0,0,.06)}h2{margin:0 0 14px;font-size:24px}label{display:block;font-weight:700;margin:12px 0 6px}input,select,textarea{width:100%;font-size:18px;padding:13px;border:1px solid var(--line);border-radius:12px;background:#fff}button{border:0;border-radius:14px;padding:14px 18px;font-weight:800;font-size:17px;background:#1f2937;color:white;margin:8px 8px 0 0}button.green{background:var(--accent);color:#07140a}button.red{background:#7f1d1d;color:#fee2e2}button.light{background:#e5e7eb;color:#111827}.grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}.grid3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px}.muted{color:var(--muted)}.big{font-size:34px;font-weight:900}.ok{color:var(--accent);font-weight:800}.bad{color:var(--danger);font-weight:800}.warn{color:var(--warn);font-weight:800}.hidden{display:none!important}.row{display:flex;justify-content:space-between;gap:14px;border-bottom:1px solid #e5e7eb;padding:10px 0}.row b:last-child{text-align:right}.expense{border:1px solid #e5e7eb;border-radius:12px;padding:10px;margin:8px 0}.report{background:white;color:#111827;border-radius:16px;padding:20px;max-width:760px;margin:auto}.report h2,.report h3{margin-bottom:8px}.report table{width:100%;border-collapse:collapse;margin:12px 0}.report th,.report td{border-bottom:1px solid #ddd;padding:8px;text-align:left}.report th:last-child,.report td:last-child{text-align:right}.small{font-size:14px}.pill{display:inline-block;background:#e5e7eb;border-radius:999px;padding:6px 10px;margin:3px}.topline{display:flex;justify-content:space-between;gap:10px;align-items:center;flex-wrap:wrap}@media(max-width:700px){.grid,.grid3{grid-template-columns:1fr}h1{font-size:29px}.wrap{padding:14px}button{width:100%;margin-right:0}.topline{display:block}.big{font-size:30px}}@media print{body{background:white}.noPrint,header{display:none!important}.wrap{padding:0}.card{box-shadow:none;border:0}.report{max-width:none}.report table{font-size:12px}}
+</style>
+</head>
+<body>
+<header><h1>Kassen-App Urbach</h1><p>Tagesabschluss · Monatsbericht · Excel-Export · Version NEU 2026</p></header>
+<div class="wrap">
+  <section id="pinBox" class="card noPrint">
+    <h2>PIN-Schutz</h2><p class="muted">PIN eingeben. Fester PIN: 2026</p>
+    <label>PIN</label><input id="pinInput" type="password" inputmode="numeric" autocomplete="off">
+    <button id="pinBtn">Entsperren</button><p id="pinMsg" class="bad"></p>
+  </section>
+  <main id="app" class="hidden">
+    <section class="card noPrint">
+      <div class="topline"><div><h2>Tagesabschluss Urbach</h2><p class="muted">Anfangsbestand ist mit 200 € vorbelegt und kann geändert werden.</p></div><button class="light" id="lockBtn">Sperren</button></div>
+      <div class="grid">
+        <div><label>Datum</label><input id="date" type="date"></div>
+        <div><label>Monat für Übersicht</label><input id="month" type="month"></div>
+      </div>
+      <div class="grid">
+        <div><label>Anfangsbestand / Wechselgeld</label><input id="startCash" type="number" step="0.01" value="200"></div>
+        <div><label>Endbestand Kasse</label><input id="endCash" type="number" step="0.01"></div>
+      </div>
+      <div class="grid3">
+        <div><label>Umsatz 7 %</label><input id="vat7" type="number" step="0.01"></div>
+        <div><label>Umsatz 19 %</label><input id="vat19" type="number" step="0.01"></div>
+        <div><label>Notiz</label><input id="note" placeholder="optional"></div>
+      </div>
+      <div class="card" style="background:#f9fafb">
+        <div class="row"><span>Barumsatz laut Kasse</span><b id="cashSales">0,00 €</b></div>
+        <div class="row"><span>7 % + 19 %</span><b id="taxSales">0,00 €</b></div>
+        <div class="row"><span>Differenz</span><b id="diff">0,00 €</b></div>
+        <p id="checkMsg" class="ok">Bitte Werte eintragen.</p>
+      </div>
+    </section>
+
+    <section class="card noPrint">
+      <h2>Ausgaben / Belege</h2>
+      <div class="grid">
+        <div><label>Beschreibung</label><input id="expenseName" placeholder="z. B. Metro, Bäcker, Sonstiges"></div>
+        <div><label>Betrag</label><input id="expenseAmount" type="number" step="0.01"></div>
+      </div>
+      <button id="addExpenseBtn">Ausgabe hinzufügen</button>
+      <div id="expenseList"></div>
+      <div class="row"><span>Ausgaben gesamt</span><b id="expenseTotal">0,00 €</b></div>
+    </section>
+
+    <section class="card noPrint">
+      <button class="green" id="saveDayBtn">Tagesabschluss speichern</button>
+      <button id="showDayReportBtn">Tagesbericht anzeigen</button>
+      <button id="showMonthReportBtn">Monatsbericht anzeigen</button>
+      <button id="excelBtn">Excel-Datei exportieren</button>
+      <button class="red" id="deleteDayBtn">Diesen Tag löschen</button>
+    </section>
+
+    <section id="monthPreview" class="card noPrint"><h2>Monatsübersicht</h2><div id="monthRows" class="muted">Noch keine Einträge.</div></section>
+
+    <section id="reportBox" class="card hidden">
+      <div id="reportContent" class="report"></div>
+      <div class="noPrint"><button class="green" onclick="window.print()">Als PDF drucken/speichern</button><button class="light" id="closeReportBtn">Bericht schließen</button></div>
+    </section>
+  </main>
+</div>
+<script>
+'use strict';
+const FIXED_PIN='2026';
+const STORE='kassenAppUrbach_NEU_2026_data';
+let state={days:{}};
+let currentExpenses=[];
+const $=id=>document.getElementById(id);
+const money=n=>(Number(n)||0).toLocaleString('de-DE',{minimumFractionDigits:2,maximumFractionDigits:2})+' €';
+const num=v=>Number(String(v||'').replace(',','.'))||0;
+const dateDE=s=>{if(!s)return'';const [y,m,d]=s.split('-');return `${d}.${m}.${y}`};
+const monthDE=m=>{if(!m)return'';const [y,mo]=m.split('-');return `${mo}/${y}`};
+function load(){try{state=JSON.parse(localStorage.getItem(STORE)||'{"days":{}}')}catch(e){state={days:{}}}}
+function save(){localStorage.setItem(STORE,JSON.stringify(state))}
+function today(){return new Date().toISOString().slice(0,10)}
+function monthNow(){return new Date().toISOString().slice(0,7)}
+function openApp(){$('pinBox').classList.add('hidden');$('app').classList.remove('hidden');initFields();loadDate();renderMonth()}
+function unlock(){const val=$('pinInput').value.trim(); if(val===FIXED_PIN){$('pinMsg').textContent='';openApp()}else{$('pinMsg').textContent='PIN falsch.'}}
+function initFields(){if(!$('date').value)$('date').value=today();if(!$('month').value)$('month').value=$('date').value.slice(0,7);}
+function getDraft(){return{date:$('date').value, startCash:num($('startCash').value), endCash:num($('endCash').value), vat7:num($('vat7').value), vat19:num($('vat19').value), note:$('note').value.trim(), expenses:currentExpenses.slice()}}
+function calc(d=getDraft()){const cashSales=d.endCash-d.startCash; const taxSales=d.vat7+d.vat19; const diff=taxSales-cashSales; const exp=d.expenses.reduce((a,e)=>a+num(e.amount),0); return{cashSales,taxSales,diff,expensesTotal:exp}}
+function renderCalc(){const c=calc();$('cashSales').textContent=money(c.cashSales);$('taxSales').textContent=money(c.taxSales);$('diff').textContent=money(c.diff);$('expenseTotal').textContent=money(c.expensesTotal);const msg=$('checkMsg'); if(!num($('endCash').value)){msg.textContent='Bitte Endbestand eintragen.';msg.className='warn'}else if(Math.abs(c.diff)<0.01){msg.textContent='Passt: 7 % + 19 % entspricht dem Barumsatz.';msg.className='ok'}else{msg.textContent='Differenz vorhanden: Kassenbestand oder Steueraufteilung prüfen.';msg.className='bad'}}
+function renderExpenses(){const box=$('expenseList'); if(!currentExpenses.length){box.innerHTML='<p class="muted">Keine Ausgaben eingetragen.</p>'}else{box.innerHTML=currentExpenses.map((e,i)=>`<div class="expense"><div class="row"><span>${escapeHtml(e.name)}</span><b>${money(e.amount)}</b></div><button class="light" onclick="removeExpense(${i})">Entfernen</button></div>`).join('')}renderCalc()}
+function addExpense(){const name=$('expenseName').value.trim();const amount=num($('expenseAmount').value); if(!name||!amount){alert('Bitte Beschreibung und Betrag eingeben.');return} currentExpenses.push({name,amount}); $('expenseName').value='';$('expenseAmount').value='';renderExpenses()}
+function removeExpense(i){currentExpenses.splice(i,1);renderExpenses()}
+function loadDate(){const d=state.days[$('date').value]; if(d){$('startCash').value=d.startCash;$('endCash').value=d.endCash;$('vat7').value=d.vat7;$('vat19').value=d.vat19;$('note').value=d.note||'';currentExpenses=d.expenses||[]}else{$('startCash').value=200;$('endCash').value='';$('vat7').value='';$('vat19').value='';$('note').value='';currentExpenses=[]}renderExpenses();renderCalc()}
+function saveDay(){const d=getDraft(); if(!d.date){alert('Bitte Datum wählen.');return} state.days[d.date]=d; save(); renderMonth(); alert('Tagesabschluss gespeichert.')}
+function deleteDay(){if(!confirm('Diesen Tagesabschluss wirklich löschen?'))return; delete state.days[$('date').value]; save(); loadDate(); renderMonth()}
+function monthDays(m=$('month').value){return Object.values(state.days).filter(d=>d.date&&d.date.startsWith(m)).sort((a,b)=>a.date.localeCompare(b.date))}
+function sums(days){return days.reduce((s,d)=>{const c=calc(d);s.start+=num(d.startCash);s.end+=num(d.endCash);s.cash+=c.cashSales;s.vat7+=num(d.vat7);s.vat19+=num(d.vat19);s.exp+=c.expensesTotal;s.diff+=c.diff;return s},{start:0,end:0,cash:0,vat7:0,vat19:0,exp:0,diff:0})}
+function renderMonth(){const days=monthDays(); const box=$('monthRows'); if(!days.length){box.innerHTML='Noch keine Einträge.';return} const s=sums(days); box.innerHTML=`<div class="row"><span>Tage</span><b>${days.length}</b></div><div class="row"><span>Barumsatz</span><b>${money(s.cash)}</b></div><div class="row"><span>Umsatz 7 %</span><b>${money(s.vat7)}</b></div><div class="row"><span>Umsatz 19 %</span><b>${money(s.vat19)}</b></div><div class="row"><span>Ausgaben</span><b>${money(s.exp)}</b></div>`+days.map(d=>`<div class="row"><span>${dateDE(d.date)}</span><b>${money(calc(d).cashSales)}</b></div>`).join('')}
+function showDayReport(){const d=state.days[$('date').value]||getDraft(); showReport(reportHtml([d],`Tagesbericht ${dateDE(d.date)}`,true))}
+function showMonthReport(){const days=monthDays(); if(!days.length){alert('Für diesen Monat gibt es noch keine gespeicherten Tagesabschlüsse.');return} showReport(reportHtml(days,`Monatsbericht ${monthDE($('month').value)}`,false))}
+function showReport(html){$('reportContent').innerHTML=html;$('reportBox').classList.remove('hidden');setTimeout(()=>$('reportBox').scrollIntoView({behavior:'smooth'}),50)}
+function reportHtml(days,title,isDay){const s=sums(days); let rows=days.map(d=>{const c=calc(d);return `<tr><td>${dateDE(d.date)}</td><td>${money(d.startCash)}</td><td>${money(d.endCash)}</td><td>${money(c.cashSales)}</td><td>${money(d.vat7)}</td><td>${money(d.vat19)}</td><td>${money(c.expensesTotal)}</td><td>${money(c.diff)}</td></tr>`}).join(''); let exp=days.flatMap(d=>(d.expenses||[]).map(e=>`<tr><td>${dateDE(d.date)}</td><td>${escapeHtml(e.name)}</td><td>${money(e.amount)}</td></tr>`)).join('')||'<tr><td colspan="3">Keine Ausgaben</td></tr>';return `<h2>Pits Burger</h2><p class="muted">Kassenbericht Urbach</p><h3>${title}</h3><p><b>Anzahl Tage:</b> ${days.length}<br><b>Barumsatz gesamt:</b> ${money(s.cash)}<br><b>Umsatz 7 %:</b> ${money(s.vat7)}<br><b>Umsatz 19 %:</b> ${money(s.vat19)}<br><b>Ausgaben gesamt:</b> ${money(s.exp)}<br><b>Differenz gesamt:</b> ${money(s.diff)}</p><h3>Tagesabschlüsse</h3><table><thead><tr><th>Datum</th><th>Anfang</th><th>Ende</th><th>Bar</th><th>7 %</th><th>19 %</th><th>Ausg.</th><th>Diff.</th></tr></thead><tbody>${rows}</tbody></table><h3>Ausgaben</h3><table><thead><tr><th>Datum</th><th>Beschreibung</th><th>Betrag</th></tr></thead><tbody>${exp}</tbody></table><p class="muted small">Erstellt am ${dateDE(today())}.</p>`}
+function exportExcel(){const days=monthDays(); if(!days.length){alert('Keine gespeicherten Daten für diesen Monat.');return} const s=sums(days); let html=`<html><head><meta charset="utf-8"></head><body><h2>Pits Burger Kassenbericht Urbach - ${monthDE($('month').value)}</h2><table border="1"><tr><th>Datum</th><th>Anfangsbestand</th><th>Endbestand</th><th>Barumsatz</th><th>Umsatz 7%</th><th>Umsatz 19%</th><th>Ausgaben</th><th>Differenz</th><th>Notiz</th></tr>`; days.forEach(d=>{const c=calc(d);html+=`<tr><td>${dateDE(d.date)}</td><td>${d.startCash}</td><td>${d.endCash}</td><td>${c.cashSales}</td><td>${d.vat7}</td><td>${d.vat19}</td><td>${c.expensesTotal}</td><td>${c.diff}</td><td>${escapeHtml(d.note||'')}</td></tr>`}); html+=`<tr><th>SUMME</th><th></th><th></th><th>${s.cash}</th><th>${s.vat7}</th><th>${s.vat19}</th><th>${s.exp}</th><th>${s.diff}</th><th></th></tr></table><h3>Ausgaben</h3><table border="1"><tr><th>Datum</th><th>Beschreibung</th><th>Betrag</th></tr>`; days.forEach(d=>(d.expenses||[]).forEach(e=>{html+=`<tr><td>${dateDE(d.date)}</td><td>${escapeHtml(e.name)}</td><td>${e.amount}</td></tr>`})); html+='</table></body></html>'; const blob=new Blob([html],{type:'application/vnd.ms-excel'}); const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download=`Kassenbericht_Urbach_${$('month').value}.xls`; a.click(); URL.revokeObjectURL(a.href)}
+function escapeHtml(s){return String(s).replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[m]))}
+load();
+$('pinBtn').onclick=unlock; $('pinInput').addEventListener('keydown',e=>{if(e.key==='Enter')unlock()}); $('lockBtn').onclick=()=>location.reload();
+['startCash','endCash','vat7','vat19'].forEach(id=>$(id).addEventListener('input',renderCalc));
+$('date').addEventListener('change',()=>{$('month').value=$('date').value.slice(0,7);loadDate();renderMonth()}); $('month').addEventListener('change',renderMonth);
+$('addExpenseBtn').onclick=addExpense; $('saveDayBtn').onclick=saveDay; $('deleteDayBtn').onclick=deleteDay; $('showDayReportBtn').onclick=showDayReport; $('showMonthReportBtn').onclick=showMonthReport; $('excelBtn').onclick=exportExcel; $('closeReportBtn').onclick=()=>$('reportBox').classList.add('hidden');
+if('serviceWorker' in navigator){navigator.serviceWorker.register('sw.js').catch(()=>{})}
+</script>
+</body>
+</html>
