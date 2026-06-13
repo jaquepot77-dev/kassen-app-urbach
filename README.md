@@ -1,9 +1,3 @@
 # Kassen-App Urbach
 
-GitHub Pages Upload:
-- index.html
-- manifest.json
-- sw.js
-- README.md
-
-PIN: 2026
+Barumsatz-Formel: Endbestand - Anfangsbestand + Ausgaben = Barumsatz. PIN: 2026
